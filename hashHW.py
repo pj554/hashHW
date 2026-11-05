@@ -1,50 +1,83 @@
-class hash_table():
-    def __init__(self, table, collisions):
-        self.table = table
-        self.collisions = collisions
+# Name: Phillip Therriault
+# Date: 11/04/2026
+# Description: Creates a hash table for a given data set of movies.
 
-    def wasted_space(self, table):
-        pass 
+import time
 
-def hashFunction_1(movie, max_index):
-    index = 0
-    for i in movie:
-        index += ord(i)
-    if index > max_index:
-        index = max_index
-    return index
+#to do: good LL, bad LP, good LP, final
 
+def create_movie(title, genre, date, director, revenue, rating, minutes, company, quote):
+    movie = {
+        "title":title,
+        "genre":genre,
+        "date":date,
+        "director":director,
+        "revenue":revenue,
+        "rating":rating,
+        "minutes":minutes,
+        "company":company,
+        "quote":quote
+    }
+    return movie
+
+# add up ascii values for each char is title/quote. return int for hash table
+def hashFunction(titlequote):
+    hashValue = 0
+    for i in titlequote:
+        hashValue += ord(i)
+    return hashValue
+    
+# take hash table and add up every empty list to get number of wasted slots
 def waste_stat_track(table):
     wasted_slots = 0
-    pass
-        
+    for i in range(len(table)):
+        if table[i] == []:
+            wasted_slots+=1
+    return wasted_slots      
 
 def main():
-    file = open("MOCK_DATA.csv","r", encoding="utf-8") # encoding = utf-8 bit was help from chatgpt. I kept getting an error trying to read in without it, so i asked ai for help. I've never seen anything like that before.
-    data = file.readlines()
-    data_count = len(data) - 1 # -1 because header line doesn't count
-    file.close()
 
+    
+    hashTable = [] # empty hash table to start
 
+    table_size = 15000 # data set has 15,000 entries, so size of table is 15,000
 
-    hashTable = hash_table([], 0)
+    collisions = 0
 
-    # create empty hash table for linked list method
-    for i in range(data_count):
-        hashTable.table.append([])
-
-    file = open("MOCK_DATA.csv","r", encoding="utf-8")
+    # create hash table with 15,000 empty slots to add to it correctly and to keep track of empty slots
+    for i in range(table_size):
+        hashTable.append([])
+   
+    file = open("MOCK_DATA.csv","r", encoding="utf-8") # utf-8 bit is help from chatgpt. I asked ai for help because I didn't understand why I was getting an error trying to read in the data
     line = file.readline() #skip header line
     line = file.readline()
-    counter = 0
+
+    # add each movie to hash table using hash function
+    start_time = time.perf_counter()
     while line != "":
-        hashTable.table[hashFunction_1(line.split(",")[0],14999)].append(line.split(",")[0])
+        line = line.split(",")
+       
+        movie = create_movie(line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7],line[8])
+
+        key = hashFunction(movie["quote"])
+        
+        key = key % table_size
+        
         line = file.readline()
-     
+
+        if len(hashTable[key]) > 1:
+            collisions += 1
+
+        hashTable[key] = movie
+    end_time = time.perf_counter()
+
     file.close()
-    print("done")
     
-
-
-    
+    print("\nHash table type: Movie Quote\n")
+    print("Statistics:")
+    print(f"Wasted slots: {waste_stat_track(hashTable)}")
+    print(f"Collisions: {collisions}")
+    print(f"Time taken to construct hash table: {end_time - start_time} \n")
+    print("Optimization attempt: Linked list method with poor hash function\n")
+   
 main()
