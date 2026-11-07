@@ -4,7 +4,7 @@
 
 import time
 
-#to do: good LL, bad LP, good LP, final
+#to do: bad LP, good LP, final
 
 def create_movie(title, genre, date, director, revenue, rating, minutes, company, quote):
     movie = {
@@ -20,11 +20,11 @@ def create_movie(title, genre, date, director, revenue, rating, minutes, company
     }
     return movie
 
-# add up ascii values for each char is title/quote. return int for hash table
+# add up ascii values while multiplying total by a prime number for each char in title/quote. return int for hash table
 def hashFunction(titlequote):
     hashValue = 0
     for i in titlequote:
-        hashValue += ord(i)
+        hashValue = (hashValue*31) + ord(i)
     return hashValue
     
 # take hash table and add up every empty list to get number of wasted slots
@@ -36,13 +36,12 @@ def waste_stat_track(table):
     return wasted_slots      
 
 def main():
-
     
     hashTable = [] # empty hash table to start
 
     table_size = 15000 # data set has 15,000 entries, so size of table is 15,000
 
-    collisions = 0
+    collisions = 0 # keep track of collisions
 
     # create hash table with 15,000 empty slots to add to it correctly and to keep track of empty slots
     for i in range(table_size):
@@ -59,9 +58,9 @@ def main():
        
         movie = create_movie(line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7],line[8])
 
-        key = hashFunction(movie["quote"])
+        key = hashFunction(movie["title"])
         
-        key = key % table_size
+        key = key % table_size # make sure key is inside range of table
         
         line = file.readline()
 
@@ -69,15 +68,16 @@ def main():
             collisions += 1
 
         hashTable[key] = movie
+
     end_time = time.perf_counter()
 
     file.close()
     
-    print("\nHash table type: Movie Quote\n")
+    print("\nHash table type: Movie Title\n")
     print("Statistics:")
     print(f"Wasted slots: {waste_stat_track(hashTable)}")
     print(f"Collisions: {collisions}")
     print(f"Time taken to construct hash table: {end_time - start_time} \n")
-    print("Optimization attempt: Linked list method with poor hash function\n")
+    print("Optimization attempt: Linked list method with good hash function\n")
    
 main()
