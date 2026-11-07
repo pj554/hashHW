@@ -24,7 +24,7 @@ def create_movie(title, genre, date, director, revenue, rating, minutes, company
 def hashFunction(titlequote):
     hashValue = 0
     for i in titlequote:
-        hashValue += ord(i)
+        hashValue = (hashValue*31) + ord(i)
     return hashValue
     
 # take hash table and add up every empty list to get number of wasted slots
@@ -86,6 +86,6 @@ def main():
     print(f"Wasted slots: {waste_stat_track(hashTable)}")
     print(f"Collisions: {collisions}")
     print(f"Time taken to construct hash table: {end_time - start_time} \n")
-    print("Optimization attempt: Linear Probing method with bad hash function\n")
+    print("Optimization attempt: Linear Probing method with good hash function\n")
    
 main()
