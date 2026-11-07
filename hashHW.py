@@ -24,14 +24,14 @@ def create_movie(title, genre, date, director, revenue, rating, minutes, company
 def hashFunction(titlequote):
     hashValue = 0
     for i in titlequote:
-        hashValue = (hashValue*31) + ord(i)
+        hashValue += ord(i)
     return hashValue
     
 # take hash table and add up every empty list to get number of wasted slots
 def waste_stat_track(table):
     wasted_slots = 0
     for i in range(len(table)):
-        if table[i] == []:
+        if table[i] == "*":
             wasted_slots+=1
     return wasted_slots      
 
@@ -45,7 +45,7 @@ def main():
 
     # create hash table with 15,000 empty slots to add to it correctly and to keep track of empty slots
     for i in range(table_size):
-        hashTable.append([])
+        hashTable.append("*")
    
     file = open("MOCK_DATA.csv","r", encoding="utf-8") # utf-8 bit is help from chatgpt. I asked ai for help because I didn't understand why I was getting an error trying to read in the data
     line = file.readline() #skip header line
@@ -62,12 +62,20 @@ def main():
         
         key = key % table_size # make sure key is inside range of table
         
-        line = file.readline()
-
-        if len(hashTable[key]) > 1:
+        
+        if hashTable[key] != "*":
             collisions += 1
 
+        while hashTable[key] != "*":
+                
+                if key >= table_size-1:
+                    key = 0
+                else:
+                    key +=1
+
         hashTable[key] = movie
+
+        line = file.readline()
 
     end_time = time.perf_counter()
 
@@ -78,6 +86,6 @@ def main():
     print(f"Wasted slots: {waste_stat_track(hashTable)}")
     print(f"Collisions: {collisions}")
     print(f"Time taken to construct hash table: {end_time - start_time} \n")
-    print("Optimization attempt: Linked list method with good hash function\n")
+    print("Optimization attempt: Linear Probing method with bad hash function\n")
    
 main()
